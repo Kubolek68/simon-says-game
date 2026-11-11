@@ -73,7 +73,7 @@ class SimonSays:
         self.score_label.pack(pady=(0, 12))
 
         self.grid_frame = tk.Frame(self.root, bg="#111318")
-        self.grid_frame.pack(padx=18, pady=4)
+        self.grid_frame.pack(fill=tk.BOTH, expand=True, padx=18, pady=4)
         self.create_grid()
 
         self.status_label = tk.Label(
@@ -128,6 +128,11 @@ class SimonSays:
         self.buttons.clear()
         self.grid_size = int(self.grid_var.get().split()[0])
         button_count = self.grid_size * self.grid_size
+        self.resize_for_grid()
+
+        for row in range(self.grid_size):
+            self.grid_frame.grid_rowconfigure(row, weight=1)
+            self.grid_frame.grid_columnconfigure(row, weight=1)
 
         for index in range(button_count):
             button = tk.Button(
@@ -141,14 +146,15 @@ class SimonSays:
                 highlightthickness=3,
                 highlightbackground="#111318",
                 highlightcolor="#111318",
-                width=7 if self.grid_size <= 4 else 5,
-                height=3 if self.grid_size <= 4 else 2,
+                width=max(4, 9 - self.grid_size),
+                height=max(2, 5 - self.grid_size // 2),
                 cursor="hand2",
                 command=lambda cell=index: self.player_click(cell),
             )
             button.grid(
                 row=index // self.grid_size,
                 column=index % self.grid_size,
+                sticky="nsew",
                 padx=4 if self.grid_size <= 4 else 2,
                 pady=4 if self.grid_size <= 4 else 2,
             )
@@ -157,6 +163,13 @@ class SimonSays:
     def settings_changed(self, _event=None):
         if not self.game_active:
             self.create_grid()
+
+    def resize_for_grid(self):
+        tile_size = 82 if self.grid_size <= 3 else 68
+        width = max(500, self.grid_size * tile_size + 100)
+        height = max(600, self.grid_size * tile_size + 285)
+        self.root.minsize(width, height)
+        self.root.geometry(f"{width}x{height}")
 
     def start_game(self):
         self.sequence = [random.randrange(self.grid_size * self.grid_size)]
