@@ -11,18 +11,9 @@ class SimonSays:
         self.root = root
         self.root.title("Simon Says")
         self.root.configure(bg="#111318")
-        self.root.resizable(False, False)
-
-        self.palette = [
-            "#ef5350", "#ec407a", "#ab47bc", "#7e57c2",
-            "#5c6bc0", "#42a5f5", "#29b6f6", "#26c6da",
-            "#26a69a", "#66bb6a", "#9ccc65", "#d4e157",
-            "#ffca28", "#ffa726", "#ff7043", "#8d6e63",
-            "#78909c", "#90a4ae", "#b0bec5", "#78909c",
-            "#8e44ad", "#16a085", "#2980b9", "#d35400",
-            "#c0392b", "#2c3e50", "#27ae60", "#f39c12",
-            "#3498db", "#e74c3c", "#1abc9c", "#9b59b6",
-        ]
+        self.root.geometry("650x760")
+        self.root.minsize(500, 600)
+        self.root.resizable(True, True)
 
         self.sequence = []
         self.player_index = 0
@@ -34,6 +25,7 @@ class SimonSays:
 
         self.grid_var = tk.StringVar(value="3 x 3")
         self.speed_var = tk.StringVar(value="Normal")
+        self.mode_var = tk.StringVar(value="Classic")
 
         self.build_ui()
 
@@ -65,6 +57,9 @@ class SimonSays:
         self.add_setting(settings, "Speed", self.speed_var, [
             "Slow", "Normal", "Fast"
         ], 2)
+        self.add_setting(settings, "Mode", self.mode_var, [
+            "Classic", "Random sequence"
+        ], 4, width=16)
 
         self.score_label = tk.Label(
             self.root,
@@ -105,7 +100,7 @@ class SimonSays:
         )
         self.start_button.pack(pady=(0, 24))
 
-    def add_setting(self, parent, label, variable, values, column):
+    def add_setting(self, parent, label, variable, values, column, width=9):
         tk.Label(
             parent,
             text=f"{label}:",
@@ -119,7 +114,7 @@ class SimonSays:
             textvariable=variable,
             values=values,
             state="readonly",
-            width=9,
+            width=width,
         )
         combo.grid(row=0, column=column + 1, padx=(0, 8))
         combo.bind("<<ComboboxSelected>>", self.settings_changed)
@@ -131,13 +126,15 @@ class SimonSays:
         self.buttons.clear()
         self.grid_size = int(self.grid_var.get().split()[0])
         button_count = self.grid_size * self.grid_size
+        normal_color = "#f4f4f5"
+        highlight_color = "#e53935"
 
         for index in range(button_count):
-            color = self.palette[index % len(self.palette)]
             button = tk.Button(
                 self.grid_frame,
-                bg=color,
-                activebackground=self.lighten(color),
+                bg=normal_color,
+                activebackground=highlight_color,
+                disabledforeground=normal_color,
                 activeforeground="#ffffff",
                 relief="flat",
                 bd=0,
@@ -222,7 +219,7 @@ class SimonSays:
             self.score += 1
             self.update_score()
             self.status_label.config(text=f"Level {self.score} complete!")
-            self.sequence.append(random.randrange(self.grid_size * self.grid_size))
+            self.extend_sequence()
             self.demo_running = True
             self.set_button_state(tk.DISABLED)
             self.root.after(650, self.play_sequence)
@@ -246,6 +243,23 @@ class SimonSays:
     def highlight_delay(self):
         speed_delays = {"Slow": 720, "Normal": 520, "Fast": 340}
         return max(150, speed_delays[self.speed_var.get()] - self.score * 12)
+
+    def extend_sequence(self):
+        length = self.score + 1
+        cell_count = self.grid_size * self.grid_size
+
+        if self.mode_var.get() == "Classic":
+            self.sequence.append(random.randrange(cell_count))
+            return
+
+        old_sequence = self.sequence
+        while True:
+            new_sequence = [
+                random.randrange(cell_count) for _ in range(length)
+            ]
+            if new_sequence != old_sequence:
+                self.sequence = new_sequence
+                return
 
     def update_score(self):
         self.score_label.config(text=f"Score: {self.score}")

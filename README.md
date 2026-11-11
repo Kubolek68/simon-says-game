@@ -6,10 +6,12 @@ A standalone Simon Says memory game built with Python's standard-library
 ## Features
 
 - Dark-mode desktop interface
+- Resizable application window
 - Configurable grid sizes from 2x2 through 6x6
 - Slow, Normal, and Fast playback speeds
-- The sequence starts with one random button
-- Every successful level appends exactly one new random button
+- White tiles with red sequence highlighting
+- Classic mode: every level keeps the previous sequence and adds one tile
+- Random sequence mode: every level creates a new random sequence one tile longer
 - Playback gets slightly faster as the score increases
 - Wrong input ends the game and shows the final score
 
