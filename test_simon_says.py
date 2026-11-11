@@ -16,9 +16,14 @@ class SimonSaysGridTests(unittest.TestCase):
     def test_all_supported_grid_sizes_create_the_expected_number_of_tiles(self):
         for size in range(self.game.MIN_GRID, self.game.MAX_GRID + 1):
             self.game.grid_var.set(f"{size} x {size}")
+            self.root.update_idletasks()
             self.game.settings_changed()
             self.assertEqual(len(self.game.buttons), size * size)
             self.assertEqual(self.game.grid_size, size)
+            self.assertEqual(
+                self.game.grid_frame.winfo_width(),
+                self.game.grid_frame.winfo_height(),
+            )
 
     def test_random_mode_creates_a_new_sequence_with_one_more_step(self):
         self.game.grid_var.set("4 x 4")
