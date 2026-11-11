@@ -74,7 +74,7 @@ class SimonSays:
         self.score_label.pack(pady=(0, 12))
 
         self.grid_frame = tk.Frame(self.root, bg="#111318")
-        self.grid_frame.pack(fill=tk.BOTH, expand=True, padx=18, pady=4)
+        self.grid_frame.pack(padx=18, pady=4)
         self.create_grid()
 
         self.status_label = tk.Label(
