@@ -203,10 +203,6 @@ class SimonSays:
         button.config(
             bg=self.HIGHLIGHT_TILE,
             activebackground=self.HIGHLIGHT_TILE,
-            relief="solid",
-            bd=8,
-            highlightbackground="#ffffff",
-            highlightcolor="#ffffff",
         )
         self.root.after(
             delay,
@@ -223,10 +219,6 @@ class SimonSays:
         self.buttons[cell].config(
             bg=self.NORMAL_TILE,
             activebackground=self.HIGHLIGHT_TILE,
-            relief="flat",
-            bd=0,
-            highlightbackground="#111318",
-            highlightcolor="#111318",
         )
         callback()
 
