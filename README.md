@@ -40,3 +40,11 @@ powershell -ExecutionPolicy Bypass -File .\install_shortcut.ps1
 - Creating many empty or meaningless commits is not a useful way to measure
   progress. Separate commits are best used for separate, understandable
   changes, such as a code fix followed by its documentation.
+
+## GitHub profile names
+
+GitHub supports a unique **username** such as `mlpawelcodes` and a separate
+public **Name** field. You can use `Kaszub` as the Name, or put it in your
+profile bio, while keeping your legal first and last name private. The
+username is used in profile and repository URLs; the Name is only a display
+label and does not have to match it.
