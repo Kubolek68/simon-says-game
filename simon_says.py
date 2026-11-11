@@ -1,5 +1,6 @@
 import random
 import tkinter as tk
+from pathlib import Path
 from tkinter import ttk
 
 
@@ -13,6 +14,9 @@ class SimonSays:
         self.root = root
         self.root.title("Simon Says")
         self.root.configure(bg="#111318")
+        icon_path = Path(__file__).with_name("simon_says.ico")
+        if icon_path.exists():
+            self.root.iconbitmap(str(icon_path))
         self.root.geometry("650x760")
         self.root.minsize(500, 600)
         self.root.resizable(True, True)
