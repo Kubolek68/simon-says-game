@@ -27,3 +27,16 @@ the included Simon Says icon:
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\install_shortcut.ps1
 ```
+
+## How GitHub commits and Contributions work
+
+- A commit is one saved change in Git history. It can contain one line or many
+  files; the number of changed lines does not determine the number of commits.
+- The commit must use an email address connected to the author's GitHub account.
+- Commits usually appear on the contribution graph when they are pushed to the
+  repository's default branch or included in a merged pull request.
+- A private repository's activity is only shown on the profile when private
+  contributions are enabled in GitHub profile settings.
+- Creating many empty or meaningless commits is not a useful way to measure
+  progress. Separate commits are best used for separate, understandable
+  changes, such as a code fix followed by its documentation.
