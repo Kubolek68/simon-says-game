@@ -28,6 +28,7 @@ class SimonSays:
         self.grid_var = tk.StringVar(value="3 x 3")
         self.speed_var = tk.StringVar(value="Normal")
         self.mode_var = tk.StringVar(value="Classic")
+        self.grid_var.trace_add("write", self.grid_selection_changed)
 
         self.build_ui()
 
@@ -128,11 +129,16 @@ class SimonSays:
         self.buttons.clear()
         self.grid_size = int(self.grid_var.get().split()[0])
         button_count = self.grid_size * self.grid_size
-        self.resize_for_grid()
+        cell_size = self.cell_size()
+        self.grid_frame.configure(
+            width=self.grid_size * cell_size,
+            height=self.grid_size * cell_size,
+        )
+        self.grid_frame.pack_propagate(False)
 
         for row in range(self.grid_size):
-            self.grid_frame.grid_rowconfigure(row, weight=1)
-            self.grid_frame.grid_columnconfigure(row, weight=1)
+            self.grid_frame.grid_rowconfigure(row, minsize=cell_size, weight=0)
+            self.grid_frame.grid_columnconfigure(row, minsize=cell_size, weight=0)
 
         for index in range(button_count):
             button = tk.Button(
@@ -146,8 +152,8 @@ class SimonSays:
                 highlightthickness=3,
                 highlightbackground="#111318",
                 highlightcolor="#111318",
-                width=max(4, 9 - self.grid_size),
-                height=max(2, 5 - self.grid_size // 2),
+                width=1,
+                height=1,
                 cursor="hand2",
                 command=lambda cell=index: self.player_click(cell),
             )
@@ -155,21 +161,29 @@ class SimonSays:
                 row=index // self.grid_size,
                 column=index % self.grid_size,
                 sticky="nsew",
-                padx=4 if self.grid_size <= 4 else 2,
-                pady=4 if self.grid_size <= 4 else 2,
+                padx=3,
+                pady=3,
             )
             self.buttons.append(button)
 
     def settings_changed(self, _event=None):
         if not self.game_active:
             self.create_grid()
+            self.resize_for_grid()
+
+    def grid_selection_changed(self, *_args):
+        if not self.game_active and hasattr(self, "grid_frame"):
+            self.root.after_idle(self.settings_changed)
 
     def resize_for_grid(self):
-        tile_size = 82 if self.grid_size <= 3 else 68
-        width = max(500, self.grid_size * tile_size + 100)
-        height = max(600, self.grid_size * tile_size + 285)
+        grid_pixels = self.grid_size * self.cell_size()
+        width = max(500, grid_pixels + 100)
+        height = max(600, grid_pixels + 285)
         self.root.minsize(width, height)
         self.root.geometry(f"{width}x{height}")
+
+    def cell_size(self):
+        return max(58, 108 - (self.grid_size * 8))
 
     def start_game(self):
         self.sequence = [random.randrange(self.grid_size * self.grid_size)]
