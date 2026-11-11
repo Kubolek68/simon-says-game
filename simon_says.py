@@ -1,11 +1,13 @@
 import random
 import tkinter as tk
-from tkinter import messagebox, ttk
+from tkinter import ttk
 
 
 class SimonSays:
     MIN_GRID = 2
     MAX_GRID = 6
+    NORMAL_TILE = "#ffffff"
+    HIGHLIGHT_TILE = "#ff0000"
 
     def __init__(self, root):
         self.root = root
@@ -126,18 +128,19 @@ class SimonSays:
         self.buttons.clear()
         self.grid_size = int(self.grid_var.get().split()[0])
         button_count = self.grid_size * self.grid_size
-        normal_color = "#f4f4f5"
-        highlight_color = "#e53935"
 
         for index in range(button_count):
             button = tk.Button(
                 self.grid_frame,
-                bg=normal_color,
-                activebackground=highlight_color,
-                disabledforeground=normal_color,
+                bg=self.NORMAL_TILE,
+                activebackground=self.HIGHLIGHT_TILE,
+                disabledforeground="#111318",
                 activeforeground="#ffffff",
                 relief="flat",
                 bd=0,
+                highlightthickness=3,
+                highlightbackground="#111318",
+                highlightcolor="#111318",
                 width=7 if self.grid_size <= 4 else 5,
                 height=3 if self.grid_size <= 4 else 2,
                 cursor="hand2",
@@ -165,7 +168,12 @@ class SimonSays:
         self.update_score()
         self.start_button.config(state=tk.DISABLED)
         self.set_button_state(tk.DISABLED)
-        self.status_label.config(text="Watch the sequence...")
+        self.start_button.config(text="Game Running...")
+        self.status_label.config(
+            text="WATCH THE SEQUENCE",
+            fg="#ff4d4d",
+            font=("Segoe UI", 13, "bold"),
+        )
         self.root.after(500, self.play_sequence)
 
     def play_sequence(self):
@@ -183,18 +191,27 @@ class SimonSays:
             self.demo_running = False
             self.player_index = 0
             self.set_button_state(tk.NORMAL)
-            self.status_label.config(text="Your turn")
+            self.status_label.config(
+                text="YOUR TURN",
+                fg="#ffffff",
+                font=("Segoe UI", 13, "bold"),
+            )
             return
 
         cell = self.sequence[step]
         button = self.buttons[cell]
-        original = button.cget("background")
-        button.config(bg=self.lighten(original))
+        button.config(
+            bg=self.HIGHLIGHT_TILE,
+            activebackground=self.HIGHLIGHT_TILE,
+            relief="solid",
+            bd=8,
+            highlightbackground="#ffffff",
+            highlightcolor="#ffffff",
+        )
         self.root.after(
             delay,
             lambda: self.restore_button(
                 cell,
-                original,
                 lambda: self.root.after(
                     pause,
                     lambda: self.play_step(step + 1, delay, pause),
@@ -202,8 +219,15 @@ class SimonSays:
             ),
         )
 
-    def restore_button(self, cell, color, callback):
-        self.buttons[cell].config(bg=color)
+    def restore_button(self, cell, callback):
+        self.buttons[cell].config(
+            bg=self.NORMAL_TILE,
+            activebackground=self.HIGHLIGHT_TILE,
+            relief="flat",
+            bd=0,
+            highlightbackground="#111318",
+            highlightcolor="#111318",
+        )
         callback()
 
     def player_click(self, cell):
@@ -218,7 +242,11 @@ class SimonSays:
         if self.player_index == len(self.sequence):
             self.score += 1
             self.update_score()
-            self.status_label.config(text=f"Level {self.score} complete!")
+            self.status_label.config(
+                text=f"LEVEL {self.score} COMPLETE",
+                fg="#7dff8a",
+                font=("Segoe UI", 11, "bold"),
+            )
             self.extend_sequence()
             self.demo_running = True
             self.set_button_state(tk.DISABLED)
@@ -227,18 +255,14 @@ class SimonSays:
     def game_over(self):
         self.game_active = False
         self.demo_running = False
-        self.set_button_state(tk.DISABLED)
-        self.start_button.config(state=tk.NORMAL)
-        messagebox.showinfo("Game Over", f"Final score: {self.score}")
-        self.reset_game()
-
-    def reset_game(self):
-        self.sequence.clear()
-        self.player_index = 0
-        self.score = 0
-        self.update_score()
-        self.status_label.config(text="Choose your settings, then start a game.")
         self.set_button_state(tk.NORMAL)
+        self.start_button.config(state=tk.NORMAL)
+        self.start_button.config(text="Play Again")
+        self.status_label.config(
+            text=f"GAME OVER\nFinal score: {self.score}",
+            fg="#ff4d4d",
+            font=("Segoe UI", 15, "bold"),
+        )
 
     def highlight_delay(self):
         speed_delays = {"Slow": 720, "Normal": 520, "Fast": 340}
@@ -267,17 +291,6 @@ class SimonSays:
     def set_button_state(self, state):
         for button in self.buttons:
             button.config(state=state)
-
-    @staticmethod
-    def lighten(color):
-        color = color.lstrip("#")
-        red, green, blue = (
-            int(color[index:index + 2], 16) for index in (0, 2, 4)
-        )
-        red = min(255, red + 55)
-        green = min(255, green + 55)
-        blue = min(255, blue + 55)
-        return f"#{red:02x}{green:02x}{blue:02x}"
 
 
 if __name__ == "__main__":
